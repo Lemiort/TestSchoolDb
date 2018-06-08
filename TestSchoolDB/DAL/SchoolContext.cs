@@ -13,8 +13,8 @@ namespace TestSchoolDB.DAL
         {
 
         }
-
+        public DbSet<Class> Classes { get; set; }
         public DbSet<Student> Students { get; set; }
-        public DbSet<ClassroomTeacher> ClassroomTeachers { get; set; }
+        public DbSet<Teacher> ClassroomTeachers { get; set; }
     }
 }

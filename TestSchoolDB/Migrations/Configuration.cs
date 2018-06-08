@@ -10,7 +10,6 @@ namespace TestSchoolDB.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
-            ContextKey = "TestSchoolDB.DAL.SchoolContext";
         }
 
         protected override void Seed(TestSchoolDB.DAL.SchoolContext context)

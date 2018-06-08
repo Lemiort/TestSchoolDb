@@ -5,12 +5,12 @@ using System.Web;
 
 namespace TestSchoolDB.Models
 {
-    public class ClassroomTeacher
+    public class Teacher
     {
-        public int ClassroomTeacherId { get; set; }
+        public int TeacherId { get; set; }
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
         public string LastName { get; set; }
-        public ICollection<Class> Classes { get; set; }
+        public virtual ICollection<Class> Classes { get; set; }
     }
 }
