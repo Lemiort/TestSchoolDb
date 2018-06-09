@@ -13,11 +13,11 @@ namespace TestSchoolDB.Migrations
                     {
                         ClassId = c.Int(nullable: false, identity: true),
                         Name = c.String(),
-                        Teacher_TeacherId = c.Int(),
+                        TeacherId = c.Int(),
                     })
                 .PrimaryKey(t => t.ClassId)
-                .ForeignKey("dbo.Teachers", t => t.Teacher_TeacherId)
-                .Index(t => t.Teacher_TeacherId);
+                .ForeignKey("dbo.Teachers", t => t.TeacherId)
+                .Index(t => t.TeacherId);
             
             CreateTable(
                 "dbo.Teachers",
@@ -49,9 +49,9 @@ namespace TestSchoolDB.Migrations
         public override void Down()
         {
             DropForeignKey("dbo.Students", "ClassId", "dbo.Classes");
-            DropForeignKey("dbo.Classes", "Teacher_TeacherId", "dbo.Teachers");
+            DropForeignKey("dbo.Classes", "TeacherId", "dbo.Teachers");
             DropIndex("dbo.Students", new[] { "ClassId" });
-            DropIndex("dbo.Classes", new[] { "Teacher_TeacherId" });
+            DropIndex("dbo.Classes", new[] { "TeacherId" });
             DropTable("dbo.Students");
             DropTable("dbo.Teachers");
             DropTable("dbo.Classes");

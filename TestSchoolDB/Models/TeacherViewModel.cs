@@ -1,64 +1,84 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using TestSchoolDB.DAL;
 
 namespace TestSchoolDB.Models
 {
     public class TeacherViewModel
     {
+        public int TeacherId { get; set; }
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
         public string LastName { get; set; }
-        public MultiSelectList Classes { get; set; }
+        public IEnumerable<SelectListItem> Classes { get; set; }
+        public IEnumerable<int> SelectedClasses { get; set; }
 
-        public static explicit operator TeacherViewModel(Teacher teacher)
+        public TeacherViewModel()
         {
-            StudentViewModel teacherViewModel = new StudentViewModel();
-            teacherViewModel.StudentId = teacher.StudentId;
-            teacherViewModel.FirstName = teacher.FirstName;
-            teacherViewModel.MiddleName = teacher.MiddleName;
-            teacherViewModel.LastName = teacher.LastName;
-            if (teacher.StudentClass != null)
-                teacherViewModel.StudentClassId = teacher.StudentClass.ClassId;
-            using (SchoolContext context = new SchoolContext())
+
+        }
+
+        public TeacherViewModel(Teacher teacher, SchoolContext context)
+        {
+            this.TeacherId = teacher.TeacherId;
+            this.FirstName = teacher.FirstName;
+            this.MiddleName = teacher.MiddleName;
+            this.LastName = teacher.LastName;
+
+
+            this.Classes = new List<SelectListItem>();
+            foreach (var item in context.Classes)
             {
-                teacherViewModel.Classes = new List<SelectListItem>();
-                foreach (var item in context.Classes)
+                if (item.TeacherId == null || item.TeacherId == teacher.TeacherId)
                 {
                     var c = new SelectListItem()
                     {
                         Text = item.Name,
                         Value = item.ClassId.ToString()
                     };
-                    if (item.ClassId == teacherViewModel.StudentClassId)
+                    if (item.TeacherId == teacher.TeacherId)
                     {
                         c.Selected = true;
                     }
 
-                    (teacherViewModel.Classes as List<SelectListItem>).Add(c);
+                    (this.Classes as List<SelectListItem>).Add(c);
                 }
             }
-            return teacherViewModel;
+
         }
 
-        public static explicit operator Student(StudentViewModel studentViewModel)
+        public Teacher ToTeacher(SchoolContext context)
         {
-            using (SchoolContext context = new SchoolContext())
-            {
-                var student = context.Students
-                     .FirstOrDefault(s => s.StudentId == studentViewModel.StudentId);
-                if (student == null)
-                    student = new Student();
-                student.FirstName = studentViewModel.FirstName;
-                student.LastName = studentViewModel.LastName;
-                student.MiddleName = studentViewModel.MiddleName;
+            var teacher = context.Teachers
+                .Include(t=>t.Classes)
+                    .FirstOrDefault(t => t.TeacherId == this.TeacherId);
+            if (teacher == null)
+                teacher = new Teacher() { Classes = new List<Class>() };
+            teacher.FirstName = this.FirstName;
+            teacher.LastName = this.LastName;
+            teacher.MiddleName = this.MiddleName;
+            teacher.Classes.Clear();
 
-                student.ClassId = studentViewModel.StudentClassId;
-                //student.StudentClass = context.Classes.FirstOrDefault(c => c.ClassId == studentViewModel.StudentClassId);
-                return student;
+            if (this.SelectedClasses != null)
+            {
+                foreach (var item in this.SelectedClasses)
+                {
+                    var selectedClass = context.Classes
+                        //.AsNoTracking()
+                        //.Include(c=>c.Teacher)
+                        .FirstOrDefault(c => c.ClassId == item);
+                    //selectedClass.TeacherId = teacher.TeacherId;
+                    //selectedClass.Teacher = teacher;
+                    teacher.Classes.Add(selectedClass);
+
+                    //context.Entry(selectedClass).State = EntityState.Modified;
+                }
             }
+            return teacher;
         }
     }
 }

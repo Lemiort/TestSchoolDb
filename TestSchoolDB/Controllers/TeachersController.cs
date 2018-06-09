@@ -11,123 +11,116 @@ using TestSchoolDB.Models;
 
 namespace TestSchoolDB.Controllers
 {
-    public class StudentsController : Controller
+    public class TeachersController : Controller
     {
         private SchoolContext db = new SchoolContext();
 
-        // GET: Students
+        // GET: Teachers
         public ActionResult Index()
         {
-            var students = db.Students.Include(s => s.StudentClass).ToList();
-            return View(students);
+            var teachers = db.Teachers
+                .Include(t => t.Classes)
+                .ToList();
+            return View(teachers);
         }
 
-        // GET: Students/Details/5
+        // GET: Teachers/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Student student = db.Students.Find(id);
-            if (student == null)
+            Teacher teacher = db.Teachers.Find(id);
+            if (teacher == null)
             {
                 return HttpNotFound();
             }
-            return View(student);
+            return View(teacher);
         }
 
-        private void PopulateClassesDropDownList(object selectedClass = null)
-        {
-            var classessQuery = from c in db.Classes
-                                   orderby c.Name
-                                   select c;
-            ViewBag.DepartmentID = new SelectList(classessQuery.AsNoTracking(), "ClassID", "Name", selectedClass);
-        }
-
-        // GET: Students/Create
+        // GET: Teachers/Create
         public ActionResult Create()
         {
-            var student = new Student();
-            return View( new StudentViewModel(student, db));
+            var teacher = new Teacher();
+            return View( new TeacherViewModel(teacher, db));
         }
 
-        // POST: Students/Create
+        // POST: Teachers/Create
         // Чтобы защититься от атак чрезмерной передачи данных, включите определенные свойства, для которых следует установить привязку. Дополнительные 
         // сведения см. в статье https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "StudentId,FirstName,MiddleName,LastName, StudentClassId")] StudentViewModel studentViewModel)
+        public ActionResult Create(/*[Bind(Include = "TeacherId,FirstName,MiddleName,LastName")]*/ TeacherViewModel teacherViewModel)
         {
             if (ModelState.IsValid)
             {
-                Student student = studentViewModel.ToStudent(db);
-
-                db.Students.Add(student);
+                var teacher = teacherViewModel.ToTeacher(db);
+                db.Teachers.Add(teacher);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            return View(studentViewModel);
+            return View(teacherViewModel);
         }
 
-        // GET: Students/Edit/5
+        // GET: Teachers/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Student student = db.Students
+            Teacher teacher = db.Teachers
                 .AsNoTracking()
-                .Include(s => s.StudentClass)
-                .FirstOrDefault(s=>s.StudentId == id);
-            if (student == null)
+                .FirstOrDefault(t =>t.TeacherId == id);
+            if (teacher == null)
             {
                 return HttpNotFound();
             }
-            return View(new StudentViewModel(student, db));
+            var teacherViewModel = new TeacherViewModel(teacher, db);
+            return View(teacherViewModel);
         }
 
-        // POST: Students/Edit/5
+        // POST: Teachers/Edit/5
         // Чтобы защититься от атак чрезмерной передачи данных, включите определенные свойства, для которых следует установить привязку. Дополнительные 
         // сведения см. в статье https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(StudentViewModel studentViewModel)
+        public ActionResult Edit(/*[Bind(Include = "TeacherId,FirstName,MiddleName,LastName")]*/ TeacherViewModel teacherViewModel)
         {
             if (ModelState.IsValid)
             {
-                var student = studentViewModel.ToStudent(db);
-                db.Entry(student).State = EntityState.Modified;
+                var teacher = teacherViewModel.ToTeacher(db);
+                db.Entry(teacher).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(studentViewModel);
+            return View(teacherViewModel);
         }
 
-        // GET: Students/Delete/5
+        // GET: Teachers/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Student student = db.Students.Find(id);
-            if (student == null)
+            Teacher teacher = db.Teachers.Find(id);
+            if (teacher == null)
             {
                 return HttpNotFound();
             }
-            return View(student);
+            return View(teacher);
         }
 
-        // POST: Students/Delete/5
+        // POST: Teachers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Student student = db.Students.Find(id);
-            db.Students.Remove(student);
+            Teacher teacher = db.Teachers.Find(id);
+            db.Teachers.Remove(teacher);
             db.SaveChanges();
             return RedirectToAction("Index");
         }

@@ -13,7 +13,7 @@ namespace TestSchoolDB.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201806071348185_1"; }
+            get { return "201806090757595_1"; }
         }
         
         string IMigrationMetadata.Source

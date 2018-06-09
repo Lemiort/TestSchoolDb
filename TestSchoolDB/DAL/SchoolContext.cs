@@ -15,6 +15,16 @@ namespace TestSchoolDB.DAL
         }
         public DbSet<Class> Classes { get; set; }
         public DbSet<Student> Students { get; set; }
-        public DbSet<Teacher> ClassroomTeachers { get; set; }
+        public DbSet<Teacher> Teachers { get; set; }
+
+        //protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        //{
+        //    // configures one-to-many relationship
+        //    modelBuilder.Entity<Class>()
+        //        .HasOptional<Teacher>(c => c.Teacher)
+        //        .WithMany(t => t.Classes)
+        //        .HasForeignKey<int?>(c => c.TeacherId);
+        //}
+
     }
 }

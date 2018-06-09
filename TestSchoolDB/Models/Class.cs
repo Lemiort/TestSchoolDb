@@ -11,8 +11,8 @@ namespace TestSchoolDB.Models
         public int ClassId { get; set; }
         public string Name { get; set; }
         
-        //public int TeacherId { get; set; }
-        /*[ForeignKey("TeacherId")]
-        public Teacher ClassroomTeacher { get; set; }*/
+        public int? TeacherId { get; set; }
+        [ForeignKey("TeacherId")]
+        public Teacher Teacher { get; set; }
     }
 }

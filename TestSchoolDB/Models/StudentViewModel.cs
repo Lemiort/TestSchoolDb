@@ -17,53 +17,52 @@ namespace TestSchoolDB.Models
         public int StudentClassId { get; set; }
         public IEnumerable<SelectListItem> Classes { get; set; }
 
-
-        public static explicit operator StudentViewModel(Student student)
+        public StudentViewModel()
         {
-            StudentViewModel studentViewModel = new StudentViewModel();
-            studentViewModel.StudentId = student.StudentId;
-            studentViewModel.FirstName = student.FirstName;
-            studentViewModel.MiddleName = student.MiddleName;
-            studentViewModel.LastName = student.LastName;
-            if(student.StudentClass != null)
-                studentViewModel.StudentClassId = student.StudentClass.ClassId;
-            using (SchoolContext context = new SchoolContext())
-            {
-                studentViewModel.Classes = new List<SelectListItem>();
-                foreach (var item in context.Classes)
-                {
-                    var c = new SelectListItem()
-                    {
-                        Text = item.Name,
-                        Value = item.ClassId.ToString()
-                    };
-                    if(item.ClassId == studentViewModel.StudentClassId)
-                    {
-                        c.Selected = true;
-                    }
 
-                    (studentViewModel.Classes as List<SelectListItem>).Add(c);
-                }
-            }
-            return studentViewModel;
         }
 
-        public static explicit operator Student(StudentViewModel studentViewModel)
+        public StudentViewModel(Student student, SchoolContext context )
         {
-            using (SchoolContext context = new SchoolContext())
-            {
-               var student = context.Students
-                    .FirstOrDefault(s=>s.StudentId == studentViewModel.StudentId);
-                if (student == null)
-                    student = new Student();
-                student.FirstName = studentViewModel.FirstName;
-                student.LastName = studentViewModel.LastName;
-                student.MiddleName = studentViewModel.MiddleName;
+            this.StudentId = student.StudentId;
+            this.FirstName = student.FirstName;
+            this.MiddleName = student.MiddleName;
+            this.LastName = student.LastName;
+            if(student.StudentClass != null)
+                this.StudentClassId = student.StudentClass.ClassId;
 
-                student.ClassId = studentViewModel.StudentClassId;
-                //student.StudentClass = context.Classes.FirstOrDefault(c => c.ClassId == studentViewModel.StudentClassId);
-                return student;
+            this.Classes = new List<SelectListItem>();
+            foreach (var item in context.Classes)
+            {
+                var c = new SelectListItem()
+                {
+                    Text = item.Name,
+                    Value = item.ClassId.ToString()
+                };
+                if(item.ClassId == this.StudentClassId)
+                {
+                    c.Selected = true;
+                }
+
+                (this.Classes as List<SelectListItem>).Add(c);
             }
+        }
+
+        public Student ToStudent(SchoolContext context)
+        {
+
+            var student = context.Students
+                .FirstOrDefault(s=>s.StudentId == this.StudentId);
+            if (student == null)
+                student = new Student();
+            student.FirstName = this.FirstName;
+            student.LastName = this.LastName;
+            student.MiddleName = this.MiddleName;
+
+            student.ClassId = this.StudentClassId;
+            //student.StudentClass = context.Classes.FirstOrDefault(c => c.ClassId == studentViewModel.StudentClassId);
+            return student;
+            
         }
     }
 }

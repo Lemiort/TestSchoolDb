@@ -1,4 +1,4 @@
-﻿@model TestSchoolDB.Models.StudentViewModel
+﻿@model TestSchoolDB.Models.TeacherViewModel
 
 @{
     ViewBag.Title = "Create";
@@ -12,7 +12,7 @@
     @Html.AntiForgeryToken()
     
 <div class="form-horizontal">
-    <h4>Student</h4>
+    <h4>Teacher</h4>
     <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     <div class="form-group">
@@ -42,11 +42,10 @@
     <div class="form-group">
         @Html.LabelFor(model => model.Classes, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.DropDownListFor( model => model.StudentClassId, Model.Classes, new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.StudentClassId, "", new { @class = "text-danger" })
+            @Html.ListBoxFor(model => model.SelectedClasses, Model.Classes, new { @class = "form-control" })
+            @*@Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })*@
         </div>
     </div>
-    
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
